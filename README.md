@@ -1,3 +1,6 @@
+# Fork
+This fork aims to give an out-of-the-box running docker container to just let you run a terrad node.
+
 # Terra Core
 ![banner](banner.png)
 
