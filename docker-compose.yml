@@ -1,68 +1,33 @@
-version: '3'
+version: '3.2'
 
 services:
-  terradnode0:
-    container_name: terradnode0
-    image: "terraproject/core"
+  terrad-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "26656-26657:26656-26657"
+      - 1317:1317
+    expose:
+      - 26657
+      - 1317
     environment:
       - ID=0
       - LOG=$${LOG:-terrad.log}
     volumes:
-      - ./build:/terrad:Z
+      - ../../../terra-data:/root/.terrad/data
     networks:
-      localnet:
-        ipv4_address: 192.168.10.2
+      - my_network
+    command: bash -c "terrad start"
 
-  terradnode1:
-    container_name: terradnode1
-    image: "terraproject/core"
-    ports:
-      - "26659-26660:26656-26657"
-    environment:
-      - ID=1
-      - LOG=$${LOG:-terrad.log}
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.3
-
-  terradnode2:
-    container_name: terradnode2
-    image: "terraproject/core"
-    environment:
-      - ID=2
-      - LOG=$${LOG:-terrad.log}
-    ports:
-      - "26661-26662:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.4
-
-  terradnode3:
-    container_name: terradnode3
-    image: "terraproject/core"
-    environment:
-      - ID=3
-      - LOG=$${LOG:-terrad.log}
-    ports:
-      - "26663-26664:26656-26657"
-    volumes:
-      - ./build:/terrad:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.5
+# when the container is running, open a new shell in it with:
+#
+# docker exec -ti <container_id> bash
+#
+# and execute the following command to start the rest-server
+#
+# terracli rest-server --chain-id=columbus-3 --node tcp://localhost:26657 --trust-node=false --laddr=tcp://0.0.0.0:1317
 
 networks:
-  localnet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 192.168.10.0/16
+  my_network:
 

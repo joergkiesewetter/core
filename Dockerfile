@@ -22,11 +22,13 @@ RUN apk add --no-cache $PACKAGES && \
     make build-linux && \
     make install
 
+
+###############################################################################
 # Final image
 FROM alpine:edge
 
 # Install ca-certificates
-RUN apk add --update ca-certificates rsync jq curl
+RUN apk add --update ca-certificates rsync jq curl bash
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/terrad /usr/bin/terrad
@@ -35,9 +37,17 @@ COPY --from=build-env /go/bin/terracli /usr/bin/terracli
 # Create a terra group and a terra user
 RUN addgroup -S terra -g 54524 && adduser -S terra -u 54524 -h /home/terra -G terra
 
+RUN terrad init --chain-id 'columbus-3' 'wth is a moniker'
+
+# copy genesis file
+ADD ./genesis.json /root/.terrad/config/genesis.json
+ADD ./config.toml /root/.terrad/config/config.toml
+ADD ./addrbook.json /root/.terrad/config/addrbook.json
+
+
 # Tell docker that all future commands should run as the terra user
-USER terra
-WORKDIR /home/terra
+WORKDIR /root
+
 
 # Run terrad by default, omit entrypoint to ease using container with terracli
 CMD ["terrad"]
