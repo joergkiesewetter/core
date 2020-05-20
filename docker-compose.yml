@@ -18,8 +18,10 @@ services:
       - ../../../terra-data:/root/.terrad/data
     networks:
       - my_network
-    command: bash -c "terrad start"
+    command: bash -c "terrad start && sleep 5m && terracli rest-server --chain-id=columbus-3 --node tcp://localhost:26657 --trust-node=false --laddr=tcp://0.0.0.0:1317"
 
+# download genesis file from here: https://github.com/terra-project/launch/tree/master/columbus-3
+# 
 # when the container is running, open a new shell in it with:
 #
 # docker exec -ti <container_id> bash
